@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
@@ -8,84 +7,133 @@ namespace T2Task1
 
     class Program
     {
-        public static bool IsEmailValid(string emailaddress)
+        public static void IsEmailValid(string emailaddress)
         {
+            if (emailaddress is null)
+            {
+                throw new ArgumentNullException("Email adress");
+            }
             try
             {
                 MailAddress m = new MailAddress(emailaddress);
-
-                return true;
             }
-            catch (FormatException)
+            catch (FormatException ex)
             {
-                return false;
+                throw new ValidationException("Wrong email format!", ex);
             }
         }
-        public static bool IsPhoneValid(string phonenumber)
+        public static void IsPhoneValid(string phonenumber)
         {
+            if(phonenumber is null)
+            {
+                throw new ArgumentNullException("Phone number");
+            }
             try
             {
                 foreach (char chr in phonenumber)
                     Int16.Parse(chr.ToString());
-
-                return true;
             }
-            catch (FormatException)
+            catch (FormatException ex)
             {
-                return false;
+                throw new ValidationException("Wrong phone format!", ex);
             }
         }
-        public static bool IsDateValid(string date)
+        public static void IsDateValid(string date)
         {
+            if (date is null)
+            {
+                throw new ArgumentNullException("Date");
+            }
             try
             {
                 DateTime.Parse(date);
-                return true;
             }
-            catch (FormatException)
+            catch (FormatException ex)
             {
-                return false;
+                throw new ValidationException("Wrong date format!", ex);
             }
         }
-        public static bool IsZipValid(string code)
+        public static void IsZipValid(string code)
         {
+            if (code is null)
+            {
+                throw new ArgumentNullException("Zip code");
+            }
             if (code.Length == 4)
-                return IsPhoneValid(code);
+            {
+                try
+                {
+                    foreach (char digit in code)
+                        Int16.Parse(digit.ToString());
+                }
+                catch (FormatException ex)
+                {
+                    throw new ValidationException("Wrong zip format! Zip should contains only digits.", ex);
+                }
+            }
             else
-                return false;
-        }
+                throw new ValidationException("Wrong zip format! Zip should contain 4 digits");
 
-        //public static bool IsSiteValid(string adress)
-        //{
-        //    UrlAttribute x = new UrlAttribute();
-        //    return x.IsValid(adress);
-        //}
-        public static bool IsSiteValid(object value)
+        }
+        public static void IsSiteValid(object value)
         {
-            Regex regex = new Regex(@"(http://)?(www\.)?\w+\.(com|net|edu|org)");
+            if (value is null)
+            {
+                throw new ArgumentNullException("Website");
+            }
+            Regex regex = new Regex(@"^((https?|ftp|smtp):\/\/)?(www.)?[a-z0-9]+\.[a-z]+(\/[a-zA-Z0-9#]+\/?)*$");
 
-            if (value == null) return false;
-
-            if (!regex.IsMatch(value.ToString())) return false;
-
-            return true;
+            if (!regex.IsMatch(value.ToString()))
+                throw new ValidationException("Wrong site format!");
         }
 
+        public static void Validation(Person person)
+        {
+            try
+            {
+                IsEmailValid(person.Email);
+                Console.WriteLine("Email is valid.");
 
+                IsPhoneValid(person.Phone);
+                Console.WriteLine("Phone is valid.");
+
+                IsDateValid(person.BDate);
+                Console.WriteLine("Bdate is valid.");
+
+                IsZipValid(person.ZipCode);
+                Console.WriteLine("ZipCode is valid.");
+
+                IsSiteValid(person.Website);
+                Console.WriteLine("Website is valid.");
+
+                Console.WriteLine("\nEverything is ok!");
+            }
+            catch (ValidationException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch(ArgumentNullException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                Console.WriteLine("\n__Finally__");
+            }
+        }
         static void Main(string[] args)
         {
-            string Email = "Vladislav@mail.ru";
-            string Phone = "0601f540";
-            string BDate = "2.2.2020";
-            string ZipCode = "4332";
-            string Website = "lol.com";
+            Person person = new Person
+            {
+                Email = "somerandom@mail.ru",
+                Phone = "060154551",
+                BDate = "2.2.2020",
+                ZipCode = "2345",
+                Website = "https://www.lol.com"
+            };
 
+            Validation(person);
 
-            Console.WriteLine(IsSiteValid(Website));
-           
-
-
-            Console.WriteLine("\n______");
             Console.ReadKey();
         }
     }
