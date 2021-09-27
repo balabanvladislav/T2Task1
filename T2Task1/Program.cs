@@ -91,6 +91,7 @@ namespace T2Task1
         {
             try
             {
+                Console.WriteLine();
                 IsEmailValid(person.Email);
                 Console.WriteLine("Email is valid.");
 
@@ -123,14 +124,40 @@ namespace T2Task1
         }
         static void Main(string[] args)
         {
-            Person person = new Person
+            byte option;
+            Person person = new Person();
+
+            Console.WriteLine("Chose option:\n1| Default value\n2| Input from user:\n");
+            option = byte.Parse(Console.ReadLine());
+            switch (option)
             {
-                Email = "somerandom@mail.ru",
-                Phone = "060154551",
-                BDate = "2.2.2020",
-                ZipCode = "2345",
-                Website = "https://www.lol.com"
-            };
+                case (1): {
+                        person.Email = "somerandom@mail.ru";
+                        person.Phone = "060154551";
+                        person.BDate = "2.2.2020";
+                        person.ZipCode = "2345";
+                        person.Website = "https://www.lol.com";
+                        break; }
+                case (2):
+                    {
+                        Console.Write("Email  :");
+                        person.Email = Console.ReadLine();
+
+                        Console.Write("Phone  :");
+                        person.Phone = Console.ReadLine();
+
+                        Console.Write("BDate  :");
+                        person.BDate = Console.ReadLine();
+
+                        Console.Write("Zipcode:");
+                        person.ZipCode = Console.ReadLine();
+
+                        Console.Write("Website:");
+                        person.Website = Console.ReadLine();
+                        };
+                        break;
+                    }
+            
 
             Validation(person);
 
